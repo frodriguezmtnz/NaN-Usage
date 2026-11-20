@@ -31,6 +31,18 @@ $("#open").addEventListener("click", () => open(PORTAL_URL));
 $("#buy").addEventListener("click", () => open(BUY_URL));
 $("#refresh").addEventListener("click", () => load());
 
+// ── Tema (auto / claro / oscuro) ──────────────────────────────
+const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+async function applyTheme() {
+  const { theme } = await getSettings();
+  const dark = theme === "dark" || (theme !== "light" && darkQuery.matches);
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+}
+
+darkQuery.addEventListener("change", applyTheme);
+applyTheme(); // se aplica antes del primer render para evitar el flash
+
 async function load() {
   $("#refresh").classList.add("spinning");
   try {
@@ -45,6 +57,7 @@ chrome.storage.onChanged.addListener((ch, area) => {
   if (area !== "local") return;
   if (ch.history) history = ch.history.newValue || [];
   if (ch.snapshot) snap = ch.snapshot.newValue;
+  if (ch.settings) applyTheme();
   if (ch.snapshot || ch.history) render();
 });
 
@@ -326,8 +339,12 @@ function settingsCard() {
       h("input", { type: "checkbox", checked: st[key] || null, onchange: (e) => saveSettings({ [key]: e.target.checked }) });
     const poll = h("select", { onchange: (e) => saveSettings({ pollMinutes: Number(e.target.value) }) },
       [1, 2, 5, 10, 15].map((m) => h("option", { value: m, selected: m === st.pollMinutes || null }, `${m} min`)));
+    const theme = h("select", { onchange: (e) => saveSettings({ theme: e.target.value }) },
+      [["auto", "Auto"], ["light", "Claro"], ["dark", "Oscuro"]].map(([v, label]) =>
+        h("option", { value: v, selected: v === st.theme || null }, label)));
 
     settingsEl.append(
+      h("div", { class: "setting" }, h("span", {}, "Tema"), theme),
       h("div", { class: "setting" }, h("span", {}, "Actualizar cada"), poll),
       h("div", { class: "setting" },
         h("span", {}, "Avisar de gasto anómalo"),
