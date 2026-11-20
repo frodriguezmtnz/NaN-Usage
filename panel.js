@@ -347,12 +347,8 @@ function settingsCard() {
       h("input", { type: "checkbox", checked: st[key] || null, onchange: (e) => saveSettings({ [key]: e.target.checked }) });
     const poll = h("select", { onchange: (e) => saveSettings({ pollMinutes: Number(e.target.value) }) },
       [1, 2, 5, 10, 15].map((m) => h("option", { value: m, selected: m === st.pollMinutes || null }, `${m} min`)));
-    const theme = h("select", { onchange: (e) => saveSettings({ theme: e.target.value }) },
-      [["auto", "Auto"], ["light", "Claro"], ["dark", "Oscuro"]].map(([v, label]) =>
-        h("option", { value: v, selected: v === st.theme || null }, label)));
 
     settingsEl.append(
-      h("div", { class: "setting" }, h("span", {}, "Tema"), theme),
       h("div", { class: "setting" }, h("span", {}, "Actualizar cada"), poll),
       h("div", { class: "setting" },
         h("span", {}, "Avisar de gasto anómalo"),
