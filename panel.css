@@ -111,6 +111,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .icon.spinning svg { animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Toggle de tema: solo se ve el icono del modo elegido */
+.theme-toggle svg { display: none; }
+[data-theme-mode="auto"] .theme-toggle .i-auto { display: block; }
+[data-theme-mode="light"] .theme-toggle .i-sun { display: block; }
+[data-theme-mode="dark"] .theme-toggle .i-moon { display: block; }
+
 .link { background: none; border: 0; padding: 0; color: var(--link); font-size: 11px; font-weight: 500; }
 .link:hover { text-decoration: underline; }
 

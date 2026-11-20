@@ -37,11 +37,19 @@ const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
 async function applyTheme() {
   const { theme } = await getSettings();
   const dark = theme === "dark" || (theme !== "light" && darkQuery.matches);
-  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  const root = document.documentElement;
+  root.dataset.theme = dark ? "dark" : "light";  // resuelto: controla los colores
+  root.dataset.themeMode = theme;                 // auto | light | dark: controla el icono
 }
 
 darkQuery.addEventListener("change", applyTheme);
 applyTheme(); // se aplica antes del primer render para evitar el flash
+
+const THEME_NEXT = { auto: "light", light: "dark", dark: "auto" };
+$("#theme-toggle").addEventListener("click", async () => {
+  const { theme } = await getSettings();
+  saveSettings({ theme: THEME_NEXT[theme] ?? "auto" });
+});
 
 async function load() {
   $("#refresh").classList.add("spinning");
