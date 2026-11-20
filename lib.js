@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS = {
   spikeEnabled: true,    // alerta de gasto anómalo
   spikeCredits: 50,
   spikeWindow: 15,       // minutos
+  theme: "auto",         // auto | light | dark
 };
 
 const ALERT_THRESHOLDS = [80, 90, 100];

@@ -31,6 +31,26 @@ $("#open").addEventListener("click", () => open(PORTAL_URL));
 $("#buy").addEventListener("click", () => open(BUY_URL));
 $("#refresh").addEventListener("click", () => load());
 
+// ── Tema (auto / claro / oscuro) ──────────────────────────────
+const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+async function applyTheme() {
+  const { theme } = await getSettings();
+  const dark = theme === "dark" || (theme !== "light" && darkQuery.matches);
+  const root = document.documentElement;
+  root.dataset.theme = dark ? "dark" : "light";  // resuelto: controla los colores
+  root.dataset.themeMode = theme;                 // auto | light | dark: controla el icono
+}
+
+darkQuery.addEventListener("change", applyTheme);
+applyTheme(); // se aplica antes del primer render para evitar el flash
+
+const THEME_NEXT = { auto: "light", light: "dark", dark: "auto" };
+$("#theme-toggle").addEventListener("click", async () => {
+  const { theme } = await getSettings();
+  saveSettings({ theme: THEME_NEXT[theme] ?? "auto" });
+});
+
 async function load() {
   $("#refresh").classList.add("spinning");
   try {
@@ -45,6 +65,7 @@ chrome.storage.onChanged.addListener((ch, area) => {
   if (area !== "local") return;
   if (ch.history) history = ch.history.newValue || [];
   if (ch.snapshot) snap = ch.snapshot.newValue;
+  if (ch.settings) applyTheme();
   if (ch.snapshot || ch.history) render();
 });
 
